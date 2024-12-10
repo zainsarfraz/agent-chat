@@ -4,5 +4,6 @@ ruff
 langchain
 langchain-groq
 langchain-community
+langchain-openai
 wikipedia
 youtube-search
