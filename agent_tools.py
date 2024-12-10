@@ -22,3 +22,9 @@ image_generation_tool = Tool(
     description="Useful for when you need to generate an image based on a text prompt",
     func=image_generation_api_wrapper,
 )
+
+google_image_search_tool = Tool(
+    name="google_images_search",
+    description="Useful for when you need to search for images url on google",
+    func=GoogleSerperAPIWrapper(type="images").results
+)

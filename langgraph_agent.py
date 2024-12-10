@@ -9,6 +9,7 @@ from agent_tools import (
     wikipedia_tool,
     youtube_search_tool,
     image_generation_tool,
+    google_image_search_tool
 )
 from langgraph.prebuilt import ToolNode, tools_condition
 import os
@@ -27,7 +28,7 @@ class State(TypedDict):
 graph_builder = StateGraph(State)
 
 groq_api_key = os.environ["GROQ_API_KEY"]
-model_name = "llama-3.2-90b-vision-preview"
+model_name = "llama3-groq-70b-8192-tool-use-preview"
 groq_llm = ChatGroq(
     temperature=0.7,
     groq_api_key=groq_api_key,
@@ -36,10 +37,10 @@ groq_llm = ChatGroq(
 )
 
 openai_api_key = os.environ["OPENAI_API_KEY"]
-model_name = "gpt-4o"
+model_name = "gpt-4o-mini"
 openai_llm = ChatOpenAI(api_key=openai_api_key, model=model_name, streaming=True)
 
-tools = [google_search_tool, wikipedia_tool, youtube_search_tool, image_generation_tool]
+tools = [google_search_tool, wikipedia_tool, youtube_search_tool, image_generation_tool, google_image_search_tool]
 
 llm_with_tools = openai_llm.bind_tools(tools=tools)
 
