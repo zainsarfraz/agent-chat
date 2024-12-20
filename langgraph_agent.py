@@ -9,7 +9,7 @@ from agent_tools import (
     wikipedia_tool,
     youtube_search_tool,
     image_generation_tool,
-    google_image_search_tool
+    google_image_search_tool,
 )
 from langgraph.prebuilt import ToolNode, tools_condition
 import os
@@ -40,7 +40,13 @@ openai_api_key = os.environ["OPENAI_API_KEY"]
 model_name = "gpt-4o-mini"
 openai_llm = ChatOpenAI(api_key=openai_api_key, model=model_name, streaming=True)
 
-tools = [google_search_tool, wikipedia_tool, youtube_search_tool, image_generation_tool, google_image_search_tool]
+tools = [
+    google_search_tool,
+    wikipedia_tool,
+    youtube_search_tool,
+    image_generation_tool,
+    google_image_search_tool,
+]
 
 llm_with_tools = openai_llm.bind_tools(tools=tools)
 

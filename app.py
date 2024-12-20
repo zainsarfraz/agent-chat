@@ -1,7 +1,8 @@
 import streamlit as st
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage, ToolMessage
-from langgraph_agent import graph
+from langgraph_agent import graph, llm_with_tools
+from tool_selector import sidebar
 
 
 st.set_page_config(page_title="Agent Chat")
@@ -13,7 +14,9 @@ if "chat_history" not in st.session_state:
         SystemMessage("You are a helpful assistant.")
     )
 
-# st.title("Agent Chat")
+sidebar()
+
+st.subheader(f":robot_face: {llm_with_tools.model_name}")
 
 for message in st.session_state.chat_history.messages:
     if isinstance(message, HumanMessage):
