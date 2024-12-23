@@ -1,11 +1,10 @@
 import streamlit as st
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage, ToolMessage
-from langgraph_agent import graph, llm_with_tools
-from tool_selector import sidebar
+from langgraph_agent import AgentGraph
+from langgraph_agent import openai_llm as llm
+from agent_tools import all_tools
 
-
-st.set_page_config(page_title="Agent Chat")
 
 
 if "chat_history" not in st.session_state:
@@ -13,10 +12,33 @@ if "chat_history" not in st.session_state:
     st.session_state.chat_history.add_message(
         SystemMessage("You are a helpful assistant.")
     )
+    
+if "agent" not in st.session_state:
+    st.session_state.agent = AgentGraph(llm=llm, tools=[])
+    
+if "selected_tools" not in st.session_state:
+    st.session_state.selected_tools = []
 
-sidebar()
+st.subheader(f":robot_face: {st.session_state.agent.llm.model_name} Chatbot")
 
-st.subheader(f":robot_face: {llm_with_tools.model_name}")
+with st.sidebar:
+    def tool_selected_on_change(*args):
+        if args[0] not in st.session_state.selected_tools:
+            st.session_state.selected_tools.append(args[0])
+        else:
+            st.session_state.selected_tools.remove(args[0])
+    
+    st.header("Select your tools here")
+    for tool in all_tools:
+        expander = st.expander(f"{tool.metadata['name']}", expanded=False)
+        expander.toggle(tool.metadata["name"], False, on_change=tool_selected_on_change, args=(tool,))
+        expander.write(tool.metadata["display_text"])
+
+    update_tools_button = st.button("Update Agent Tools", type="primary")
+    if update_tools_button:
+        del st.session_state.agent
+        st.session_state.agent = AgentGraph(llm=llm, tools=st.session_state.selected_tools)
+        
 
 for message in st.session_state.chat_history.messages:
     if isinstance(message, HumanMessage):
@@ -32,6 +54,8 @@ if user_input:
 
     status_progress_placeholder = st.container()
 
+    graph = st.session_state.agent.graph
+    
     with st.chat_message("assistant"):
         response_placeholder = st.empty()
         response = ""
