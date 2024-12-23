@@ -4,7 +4,6 @@ from langchain_groq import ChatGroq
 from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
-from agent_tools import all_tools
 from langgraph.prebuilt import ToolNode, tools_condition
 import os
 from dotenv import load_dotenv
@@ -24,11 +23,12 @@ openai_api_key = os.environ["OPENAI_API_KEY"]
 model_name = "gpt-4o-mini"
 openai_llm = ChatOpenAI(api_key=openai_api_key, model=model_name, streaming=True)
 
+
 class State(TypedDict):
     messages: Annotated[list, add_messages]
 
 
-class AgentGraph():
+class AgentGraph:
     def __init__(self, llm, tools):
         self.llm = llm
         self.tools = tools
@@ -42,7 +42,6 @@ class AgentGraph():
 
     def chatbot(self, state: State):
         return {"messages": [self.llm_with_tools.invoke(state["messages"])]}
-
 
     def build_graph(self):
         self.graph_builder.add_node("chatbot", self.chatbot)
